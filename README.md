@@ -1,80 +1,106 @@
-# 📊 App-finanza-PyQt5
+# App-finanza-PyQt5
 
-![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)
-![Framework](https://img.shields.io/badge/framework-PyQt5-green.svg)
-![License](https://img.shields.io/badge/license-MIT-important.svg)
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
+[![Framework](https://img.shields.io/badge/framework-PyQt5-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
+[![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
 
-Una aplicación de escritorio intuitiva y ligera diseñada para la gestión de finanzas personales sencillas. Desarrollada en Python utilizando el framework **PyQt5** para ofrecer una interfaz gráfica de usuario (GUI) fluida, dinámica y fácil de usar.
-
----
-
-## ✨ Características Principales
-
-* **Registro de Movimientos:** Añade y organiza tus ingresos y egresos de forma rápida.
-* **Tabla Dinámica:** Visualización clara de todos tus movimientos financieros con actualización en tiempo real.
-* **Categorización Avanzada:** Clasifica tus transacciones (ej. alimentación, transporte, estudios, ahorros) para un mejor control.
-* **Interfaz Gráfica Intuitiva:** Interfaz limpia construida con componentes nativos de PyQt5, optimizada para la experiencia de usuario.
+Una aplicación de escritorio intuitiva y robusta para la **gestión y control de finanzas personales**, desarrollada en Python utilizando la biblioteca gráfica **PyQt5**. Esta herramienta permite a los usuarios registrar, organizar y visualizar sus flujos económicos de manera eficiente a través de una interfaz limpia y dinámica.
 
 ---
 
-## 🚀 Requisitos e Instalación
+## 🚀 Características Principales
 
-### Prerrequisitos
-
-Asegúrate de tener instalado Python (versión 3.8 o superior) en tu sistema. Puedes comprobarlo ejecutando:
-
-```bash
-python --version
-```
-
-### Instalación
-
-1. **Clona este repositorio** en tu máquina local:
-   ```bash
-   git clone https://github.com/samurai-labbug/App-finanza-PyQt5.git
-   ```
-
-2. **Accede al directorio** del proyecto:
-   ```bash
-   cd App-finanza-PyQt5
-   ```
-
-3. **Instala las dependencias necesarias** (PyQt5):
-   ```bash
-   pip install PyQt5
-   ```
-
----
-
-## 💻 Uso
-
-Para iniciar la aplicación, simplemente ejecuta el archivo principal `main.py` desde tu terminal:
-
-```bash
-python main.py
-```
+* **Registro de Flujos:** Gestión dinámica de ingresos y egresos mediante tablas interactivas.
+* **Categorización Avanzada:** Clasificación de movimientos para un análisis detallado del destino del dinero.
+* **Interfaz Gráfica Moderna:** Diseño intuitivo construido sobre PyQt5, optimizado para la experiencia de usuario.
+* **Persistencia de Datos:** Almacenamiento eficiente para el seguimiento del historial financiero a lo largo del tiempo.
 
 ---
 
 ## 🛠️ Tecnologías Utilizadas
 
-* **Lenguaje:** [Python](https://www.python.org/)
-* **Interfaz Gráfica:** [PyQt5](https://pypi.org/project/PyQt5/) (Bindings de Python para Qt5)
+* **Lenguaje:** Python 3.x
+* **Interfaz Gráfica (GUI):** PyQt5
+* **Gestión de Datos:** Componentes nativos de manejo de tablas y estructuras de datos dinámicas en Python.
 
 ---
 
-## 📌 Próximas Mejoras (Roadmap)
+## 📦 Instalación y Configuración
 
-* [ ] Integración de base de datos local (SQLite) para persistencia de datos.
-* [ ] Gráficos estadísticos y reportes visuales mensuales (utilizando Matplotlib o PyQtCharts).
-* [ ] Sistema de filtrado por fechas y categorías.
-* [ ] Exportación de datos a formatos CSV o Excel.
+Sigue estos pasos para clonar el repositorio y ejecutar la aplicación en tu entorno local:
+
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/samurai-labbug/App-finanza-PyQt5.git
+cd App-finanza-PyQt5
+```
+
+### 2. Crear y activar un entorno virtual (Recomendado)
+En Windows:
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+En macOS/Linux:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3. Instalar dependencias
+Asegúrate de tener `pip` actualizado e instala PyQt5:
+```bash
+pip install --upgrade pip
+pip install PyQt5
+```
+
+---
+
+## 💻 Uso
+
+Para iniciar la aplicación, ejecuta el script principal desde la terminal:
+
+```bash
+python main.py
+```
+*(Nota: Reemplaza `main.py` por el nombre del archivo de entrada principal de tu proyecto si este difiere, por ejemplo, `app.py`).*
+
+---
+
+## 📂 Estructura del Proyecto
+
+A continuación se detalla la organización de los archivos principales:
+
+```text
+App-finanza-PyQt5/
+│
+├── main.py              # Punto de entrada de la aplicación
+├── gui/                 # Diseños de interfaz (.ui) y lógica de ventanas
+│   ├── main_window.py   # Controlador de la pantalla principal
+│   └── ...
+├── modules/             # Lógica de negocio (cálculos, manejo de datos)
+│   ├── finanzas.py
+│   └── ...
+└── README.md            # Documentación del proyecto
+```
+
+---
+
+## 🤝 Contribuciones
+
+¡Las contribuciones son bienvenidas! Si deseas mejorar la aplicación, optimizar el código o añadir nuevas funciones:
+
+1. Haz un **Fork** del proyecto.
+2. Crea una nueva rama para tu característica (`git checkout -b feature/NuevaMejora`).
+3. Realiza tus cambios y haz un commit (`git commit -m 'Añade nueva funcionalidad'`).
+4. Sube los cambios a tu rama (`git push origin feature/NuevaMejora`).
+5. Abre un **Pull Request**.
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo [LICENSE](LICENSE) para obtener más detalles.
+Este proyecto está bajo la Licencia MIT. Para más detalles, consulta el archivo [LICENSE](LICENSE) si está disponible.
 
 ---
-🔬 *Desarrollado con fines educativos y de organización personal.*
+**Desarrollado por [samurai-labbug](https://github.com/samurai-labbug)**
