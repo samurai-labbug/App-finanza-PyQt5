@@ -6,136 +6,15 @@ from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QPushButton,
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
 from datetime import date
+from config import *
 
-# --- Configuración global ---
-ANCHO, ALTO = 800, 500 
-WIN_TITLE = 'App de Finanzas Personales'
-cabeceras = ["Fecha", "Descripción", "Monto"]
 
-# --- Estilos para los botones (CSS) ---
-ESTILO_BOTON = """
-    QPushButton {
-        background-color: #0078D7;
-        color: white;
-        border-radius: 5px;
-        padding: 8px;
-        font-weight: bold;
-        font-size: 12px;
-    }
-    QPushButton:hover {
-        background-color: #005a9e;
-    }
-    QPushButton:pressed {
-        background-color: #004275;
-    }
-"""
-
-ESTILO_BOTON_EDITAR = """
-    QPushButton {
-        background-color: #F57C00;
-        color: white;
-        border-radius: 5px;
-        padding: 8px;
-        font-weight: bold;
-    }
-    QPushButton:hover {
-        background-color: #ef6c00;
-    }
-    QPushButton:disabled {
-        background-color: #BDBDBD;
-        color: #757575;
-    }
-"""
-
-ESTILO_BOTON_BORRAR = """
-    QPushButton {
-        background-color: #D32F2F;
-        color: white;
-        border-radius: 5px;
-        padding: 8px;
-        font-weight: bold;
-    }
-    QPushButton:hover {
-        background-color: #b71c1c;
-    }
-"""
-
-ESTILO_BOTON_EGRESO = """
-    QPushButton {
-        background-color: #e0b402;
-        color: white;
-        border-radius: 5px;
-        padding: 8px;
-        font-weight: bold;
-        font-size: 12px;
-    }
-    QPushButton:hover {
-        background-color: #e08002;
-    }
-    QPushButton:pressed {
-        background-color: #b36b00;
-    }
-"""
-
-# --- Estilo para inputs ---
-ESTILO_INPUT = """
-    QLineEdit {
-        color: #000000;
-        background-color: #FFFFFF;
-        padding: 5px;
-        font-size: 12px;
-        border-radius: 3px;
-        border: 1px solid #CCCCCC;
-    }
-    QLineEdit:focus {
-        border: 2px solid #0078D7;
-    }
-"""
-
-ESTILO_SPINBOX = """
-    QDoubleSpinBox {
-        color: #000000;
-        background-color: #FFFFFF;
-        padding: 5px;
-        font-size: 12px;
-        border: 1px solid #CCCCCC;
-        border-radius: 3px;
-    }
-    QDoubleSpinBox:focus {
-        border: 2px solid #0078D7;
-    }
-"""
-
-# --- Estilo para los mensajes (QMessageBox) ---
-ESTILO_MENSAJE = """
-    QMessageBox {
-        background-color: #2E3A1F;
-        color: #FFFFFF;
-    }
-    QMessageBox QLabel {
-        color: #FFFFFF;
-        font-size: 12px;
-    }
-    QMessageBox QPushButton {
-        background-color: #0078D7;
-        color: white;
-        border-radius: 5px;
-        padding: 8px 20px;
-        min-width: 60px;
-    }
-    QMessageBox QPushButton:hover {
-        background-color: #005a9e;
-    }
-"""
-
-# --- Clase simple para el registro ---
 class RegistroFinanza:
     def __init__(self, fecha, descripcion, monto):
         self.fecha = fecha
         self.descripcion = descripcion
         self.monto = monto
 
-# --- Ventana Principal ---
 class FinanzasApp(QWidget):
     def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent=parent, flags=flags)
@@ -153,7 +32,6 @@ class FinanzasApp(QWidget):
         self.setStyleSheet("background-color: #2E3A1F;")
 
     def UI_setup(self):
-        # --- 1. Inputs (Arriba) ---
         self.lbl_descripcion = QLabel("Descripción:")
         self.lbl_descripcion.setStyleSheet("color: #FFFFE0; font-family: Comic Sans MS; font-size: 14px; font-weight: bold;")
         self.lbl_descripcion.setFont(QFont("Comic Sans MS", 12, QFont.Bold))
@@ -201,44 +79,14 @@ class FinanzasApp(QWidget):
         top_layout.addWidget(self.btn_editar)
         top_layout.addWidget(self.btn_limpiar)
 
-        # --- 2. Tabla (Centro) ---
+        # Tabla
         self.tabla = QTableWidget(0, 3)
         self.tabla.setHorizontalHeaderLabels(cabeceras)
         self.tabla.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabla.setAlternatingRowColors(True)
-        
-        # Estilo mejorado para la tabla - sin cuadros blancos
-        self.tabla.setStyleSheet("""
-            QTableWidget {
-                background-color: #FFFFFF;
-                gridline-color: #CCCCCC;
-                font-size: 12px;
-            }
-            QTableWidget::item {
-                padding: 5px;
-            }
-            QTableWidget::item:selected {
-                background-color: #6B8E23;
-                color: white;
-            }
-            QHeaderView::section {
-                background-color: #6B8E23;
-                color: white;
-                padding: 5px;
-                font-weight: bold;
-                border: none;
-            }
-            QTableWidget QTableCornerButton::section {
-                background-color: #6B8E23;
-                border: none;
-            }
-        """)
-        
+        self.tabla.setStyleSheet(ESTILO_TABLA)
         self.tabla.horizontalHeader().setSectionResizeMode(1)
-        
-        # Quitar el botón de esquina
         self.tabla.setCornerButtonEnabled(False)
-        
         self.tabla.clicked.connect(self.on_tabla_clicada)
 
         # --- Layout Principal ---
@@ -249,14 +97,12 @@ class FinanzasApp(QWidget):
         
         self.setLayout(main_layout)
 
-    # --- Funciones auxiliares ---
     def es_fila_total(self, fila):
         if fila < 0 or self.tabla.rowCount() == 0:
             return False
         item = self.tabla.item(fila, 1)
         return item is not None and item.text() == "TOTAL"
 
-    # --- Métodos para mostrar mensajes personalizados ---
     def mostrar_advertencia(self, titulo, mensaje):
         msg = QMessageBox()
         msg.setWindowTitle(titulo)
@@ -281,7 +127,6 @@ class FinanzasApp(QWidget):
                 return True
         return False
     
-
     def gestionar_click_registrar(self, tipo):
         if self.fila_seleccionada >= 0 and not self.es_fila_total(self.fila_seleccionada):
             self.actualizar_registro(tipo)
@@ -308,7 +153,6 @@ class FinanzasApp(QWidget):
 
         monto_final = -monto if tipo == "egreso" else monto
         
-        
         if self.verificar_registro_duplicado(desc, monto_final):
             respuesta = self.mostrar_confirmacion("Registro Duplicado", f"Ya existe un registro con descripción '{desc}' y monto ${abs(monto_final):.2f}\n\n¿Desea registrarlo de igual forma?")
             if respuesta != QMessageBox.Yes:
@@ -318,7 +162,6 @@ class FinanzasApp(QWidget):
         nuevo_reg = RegistroFinanza(fecha_hoy, desc, monto_final)
         self.lista_registros.append(nuevo_reg)
 
-        # Insertar al final, antes del Total si existe
         fila_index = self.tabla.rowCount()
         if self.es_fila_total(self.tabla.rowCount() - 1):
             fila_index = self.tabla.rowCount() - 1
@@ -327,8 +170,6 @@ class FinanzasApp(QWidget):
         self.set_celda(fila_index, 0, fecha_hoy)
         self.set_celda(fila_index, 1, desc)
         self.set_celda(fila_index, 2, f"{monto_final:.2f}")
-
-        # Establecer altura de fila para evitar espacios en blanco
         self.tabla.setRowHeight(fila_index, 30)
 
         self.actualizar_total()
@@ -472,7 +313,6 @@ class FinanzasApp(QWidget):
         
         self.tabla.setRowHeight(fila_total, 25)
 
-# --- Función Main ---
 def run():
     app = QApplication(sys.argv)
     app.setAttribute(Qt.AA_EnableHighDpiScaling, True) 
