@@ -54,7 +54,6 @@ ESTILO_BOTON_BORRAR = """
         border-radius: 5px;
         padding: 8px;
         font-weight: bold;
-        
     }
     QPushButton:hover {
         background-color: #b71c1c;
@@ -74,7 +73,58 @@ ESTILO_BOTON_EGRESO = """
         background-color: #e08002;
     }
     QPushButton:pressed {
-        background-color: #004275;
+        background-color: #b36b00;
+    }
+"""
+
+# --- Estilo para inputs ---
+ESTILO_INPUT = """
+    QLineEdit {
+        color: #000000;
+        background-color: #FFFFFF;
+        padding: 5px;
+        font-size: 12px;
+        border-radius: 3px;
+        border: 1px solid #CCCCCC;
+    }
+    QLineEdit:focus {
+        border: 2px solid #0078D7;
+    }
+"""
+
+ESTILO_SPINBOX = """
+    QDoubleSpinBox {
+        color: #000000;
+        background-color: #FFFFFF;
+        padding: 5px;
+        font-size: 12px;
+        border: 1px solid #CCCCCC;
+        border-radius: 3px;
+    }
+    QDoubleSpinBox:focus {
+        border: 2px solid #0078D7;
+    }
+"""
+
+# --- Estilo para los mensajes (QMessageBox) ---
+ESTILO_MENSAJE = """
+    QMessageBox {
+        background-color: #2E3A1F;
+        color: #FFFFFF;
+    }
+    QMessageBox QLabel {
+        color: #FFFFFF;
+        font-size: 12px;
+    }
+    QMessageBox QPushButton {
+        background-color: #0078D7;
+        color: white;
+        border-radius: 5px;
+        padding: 8px 20px;
+        min-width: 60px;
+    }
+    QMessageBox QPushButton:hover {
+        background-color: #005a9e;
     }
 """
 
@@ -87,7 +137,7 @@ class RegistroFinanza:
 
 # --- Ventana Principal ---
 class FinanzasApp(QWidget):
-    def __init__(self, parent=None, flags=Qt.WindowFlags()):  # <-- Corregido aquí
+    def __init__(self, parent=None, flags=Qt.WindowFlags()):
         super().__init__(parent=parent, flags=flags)
 
         self.lista_registros = [] 
@@ -110,7 +160,7 @@ class FinanzasApp(QWidget):
         
         self.input_desc = QLineEdit()
         self.input_desc.setPlaceholderText('Ej: Compra Supermercado')
-        self.input_desc.setStyleSheet("color: #FFFFE0; padding: 5px; font-size: 12px; border-radius: 3px;")
+        self.input_desc.setStyleSheet(ESTILO_INPUT)
         
         self.lbl_monto = QLabel("Monto:")
         self.lbl_monto.setStyleSheet("color: #FFFFE0; font-family: Comic Sans MS; font-size: 14px; font-weight: bold;")
@@ -118,18 +168,18 @@ class FinanzasApp(QWidget):
         
         self.input_monto = QDoubleSpinBox()
         self.input_monto.setPrefix("$ ")
-        self.input_monto.setRange(0, 9999999.99)
+        self.input_monto.setRange(0.01, 9999999.99)
         self.input_monto.setDecimals(2)
-        self.input_monto.setStyleSheet("color: #FFFFE0; padding: 5px; font-size: 12px; border-radius: 3px;")
+        self.input_monto.setStyleSheet(ESTILO_SPINBOX)
         
         # Botones
         self.btn_registrar = QPushButton("INGRESO")
         self.btn_registrar.setStyleSheet(ESTILO_BOTON)
-        self.btn_registrar.clicked.connect(self.gestionar_click_registrar)
-        
+        self.btn_registrar.clicked.connect(lambda: self.gestionar_click_registrar("ingreso"))
+
         self.btn_egreso = QPushButton("EGRESO")
         self.btn_egreso.setStyleSheet(ESTILO_BOTON_EGRESO)
-        self.btn_egreso.clicked.connect(self.gestionar_click_registrar)
+        self.btn_egreso.clicked.connect(lambda: self.gestionar_click_registrar("egreso"))
 
         self.btn_editar = QPushButton("✎ EDITAR")
         self.btn_editar.setStyleSheet(ESTILO_BOTON_EDITAR)
@@ -157,11 +207,15 @@ class FinanzasApp(QWidget):
         self.tabla.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tabla.setAlternatingRowColors(True)
         
+        # Estilo mejorado para la tabla - sin cuadros blancos
         self.tabla.setStyleSheet("""
             QTableWidget {
                 background-color: #FFFFFF;
-                gridline-color: #333333;
+                gridline-color: #CCCCCC;
                 font-size: 12px;
+            }
+            QTableWidget::item {
+                padding: 5px;
             }
             QTableWidget::item:selected {
                 background-color: #6B8E23;
@@ -172,10 +226,18 @@ class FinanzasApp(QWidget):
                 color: white;
                 padding: 5px;
                 font-weight: bold;
+                border: none;
+            }
+            QTableWidget QTableCornerButton::section {
+                background-color: #6B8E23;
+                border: none;
             }
         """)
         
         self.tabla.horizontalHeader().setSectionResizeMode(1)
+        
+        # Quitar el botón de esquina
+        self.tabla.setCornerButtonEnabled(False)
         
         self.tabla.clicked.connect(self.on_tabla_clicada)
 
@@ -194,39 +256,69 @@ class FinanzasApp(QWidget):
         item = self.tabla.item(fila, 1)
         return item is not None and item.text() == "TOTAL"
 
-    # --- Lógica ---
+    # --- Métodos para mostrar mensajes personalizados ---
+    def mostrar_advertencia(self, titulo, mensaje):
+        msg = QMessageBox()
+        msg.setWindowTitle(titulo)
+        msg.setText(mensaje)
+        msg.setIcon(QMessageBox.Warning)
+        msg.setStyleSheet(ESTILO_MENSAJE)
+        msg.exec_()
 
-    def gestionar_click_registrar(self):
+    def mostrar_confirmacion(self, titulo, mensaje):
+        msg = QMessageBox()
+        msg.setWindowTitle(titulo)
+        msg.setText(mensaje)
+        msg.setIcon(QMessageBox.Question)
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg.setStyleSheet(ESTILO_MENSAJE)
+        return msg.exec_()
+
+    def verificar_registro_duplicado(self, descripcion, monto):
+    
+        for reg in self.lista_registros:
+            if reg.descripcion.lower() == descripcion.lower() and reg.monto == monto:
+                return True
+        return False
+    
+
+    def gestionar_click_registrar(self, tipo):
         if self.fila_seleccionada >= 0 and not self.es_fila_total(self.fila_seleccionada):
-            self.actualizar_registro()
+            self.actualizar_registro(tipo)
         else:
-            self.agregar_nuevo_registro()
-        
-    def gestionar_click_egreso(self):
-        if self.fila_seleccionada 
+            self.agregar_nuevo_registro(tipo)
 
     def gestionar_click_limpiar(self):
         if self.fila_seleccionada >= 0 and not self.es_fila_total(self.fila_seleccionada):
             self.borrar_registro()
         else:
-            self.limpiar_formulario()
+            self.borrar_todo()
 
-    def agregar_nuevo_registro(self):
+    def agregar_nuevo_registro(self, tipo):
         desc = self.input_desc.text().strip()
         monto = self.input_monto.value()
 
         if not desc:
-            QMessageBox.warning(self, "Advertencia", "Por favor ingrese una descripción.")
+            self.mostrar_advertencia("Advertencia", "Por favor ingrese una descripción.")
             return
             
         if monto == 0:
-            QMessageBox.warning(self, "Advertencia", "El monto no puede ser 0. Ingrese un valor positivo o negativo.")
+            self.mostrar_advertencia("Advertencia", "El monto no puede ser 0.")
             return
 
+        monto_final = -monto if tipo == "egreso" else monto
+        
+        
+        if self.verificar_registro_duplicado(desc, monto_final):
+            respuesta = self.mostrar_confirmacion("Registro Duplicado", f"Ya existe un registro con descripción '{desc}' y monto ${abs(monto_final):.2f}\n\n¿Desea registrarlo de igual forma?")
+            if respuesta != QMessageBox.Yes:
+                return
+        
         fecha_hoy = date.today().strftime("%Y-%m-%d")
         nuevo_reg = RegistroFinanza(fecha_hoy, desc, monto)
         self.lista_registros.append(nuevo_reg)
 
+        # Insertar al final, antes del Total si existe
         fila_index = self.tabla.rowCount()
         if self.es_fila_total(self.tabla.rowCount() - 1):
             fila_index = self.tabla.rowCount() - 1
@@ -235,6 +327,9 @@ class FinanzasApp(QWidget):
         self.set_celda(fila_index, 0, fecha_hoy)
         self.set_celda(fila_index, 1, desc)
         self.set_celda(fila_index, 2, f"{monto:.2f}")
+
+        # Establecer altura de fila para evitar espacios en blanco
+        self.tabla.setRowHeight(fila_index, 30)
 
         self.actualizar_total()
         self.limpiar_formulario()
@@ -246,7 +341,7 @@ class FinanzasApp(QWidget):
             self.btn_editar.setEnabled(False)
             self.btn_editar.setText("✎ EDITAR")
             self.btn_limpiar.setText("LIMPIAR")
-            self.btn_limpiar.setStyleSheet("QPushButton { background-color: #606060; color: white; border-radius: 5px; padding: 8px; }")
+            self.btn_limpiar.setStyleSheet("QPushButton { background-color: #606060; color: white; border-radius: 5px; padding: 8px; font-weight: bold; }")
             self.fila_seleccionada = -1
         else:
             self.fila_seleccionada = fila_actual
@@ -261,7 +356,7 @@ class FinanzasApp(QWidget):
 
         reg = self.lista_registros[self.fila_seleccionada]
         self.input_desc.setText(reg.descripcion)
-        self.input_monto.setValue(reg.monto)
+        self.input_monto.setValue(abs(reg.monto))
 
         self.btn_registrar.setText("GUARDAR CAMBIOS")
         self.btn_registrar.setStyleSheet("""
@@ -269,7 +364,7 @@ class FinanzasApp(QWidget):
             QPushButton:hover { background-color: #2E7D32; }
         """)
 
-    def actualizar_registro(self):
+    def actualizar_registro(self, tipo):
         if self.fila_seleccionada < 0 or self.es_fila_total(self.fila_seleccionada):
             return
             
@@ -280,8 +375,11 @@ class FinanzasApp(QWidget):
             return
             
         if monto == 0:
-            QMessageBox.warning(self, "Advertencia", "El monto no puede ser 0. Ingrese un valor positivo o negativo.")
+            self.mostrar_advertencia("Advertencia", "El monto no puede ser 0.")
             return
+
+        if tipo == "egreso":
+            monto = -monto
 
         self.lista_registros[self.fila_seleccionada].descripcion = desc
         self.lista_registros[self.fila_seleccionada].monto = monto
@@ -299,12 +397,7 @@ class FinanzasApp(QWidget):
         if self.fila_seleccionada >= len(self.lista_registros):
             return
             
-        respuesta = QMessageBox.question(
-            self, 
-            "Confirmar Borrar", 
-            "¿Está seguro de que desea eliminar este registro?",
-            QMessageBox.Yes | QMessageBox.No
-        )
+        respuesta = self.mostrar_confirmacion("Confirmar Borrar", "¿Está seguro de que desea eliminar este registro?")
         
         if respuesta == QMessageBox.Yes:
             indice = self.fila_seleccionada
@@ -316,18 +409,30 @@ class FinanzasApp(QWidget):
             
             self.limpiar_formulario()
 
+    def borrar_todo(self):
+        if len(self.lista_registros) == 0:
+            return
+            
+        respuesta = self.mostrar_confirmacion("Confirmar Borrar Todo", "¿Está seguro de que desea eliminar TODOS los registros?")
+        
+        if respuesta == QMessageBox.Yes:
+            self.lista_registros = []
+            self.tabla.setRowCount(0)
+            self.actualizar_total()
+            self.limpiar_formulario()
+
     def limpiar_formulario(self):
         self.input_desc.clear()
         self.input_monto.setValue(0.0)
         
-        self.btn_registrar.setText("REGISTRAR")
+        self.btn_registrar.setText("INGRESO")
         self.btn_registrar.setStyleSheet(ESTILO_BOTON)
         
         self.btn_editar.setEnabled(False)
         self.btn_editar.setText("✎ EDITAR")
         
         self.btn_limpiar.setText("LIMPIAR")
-        self.btn_limpiar.setStyleSheet("QPushButton { background-color: #606060; color: white; border-radius: 5px; padding: 8px; }")
+        self.btn_limpiar.setStyleSheet("QPushButton { background-color: #606060; color: white; border-radius: 5px; padding: 8px; font-weight: bold; }")
         
         self.tabla.clearSelection()
         self.fila_seleccionada = -1
