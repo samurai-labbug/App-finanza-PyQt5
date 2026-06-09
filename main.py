@@ -54,9 +54,27 @@ ESTILO_BOTON_BORRAR = """
         border-radius: 5px;
         padding: 8px;
         font-weight: bold;
+        
     }
     QPushButton:hover {
         background-color: #b71c1c;
+    }
+"""
+
+ESTILO_BOTON_EGRESO = """
+    QPushButton {
+        background-color: #e0b402;
+        color: white;
+        border-radius: 5px;
+        padding: 8px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+    QPushButton:hover {
+        background-color: #e08002;
+    }
+    QPushButton:pressed {
+        background-color: #004275;
     }
 """
 
@@ -92,7 +110,7 @@ class FinanzasApp(QWidget):
         
         self.input_desc = QLineEdit()
         self.input_desc.setPlaceholderText('Ej: Compra Supermercado')
-        self.input_desc.setStyleSheet("padding: 5px; font-size: 12px; border-radius: 3px;")
+        self.input_desc.setStyleSheet("color: #FFFFE0; padding: 5px; font-size: 12px; border-radius: 3px;")
         
         self.lbl_monto = QLabel("Monto:")
         self.lbl_monto.setStyleSheet("color: #FFFFE0; font-family: Comic Sans MS; font-size: 14px; font-weight: bold;")
@@ -100,14 +118,18 @@ class FinanzasApp(QWidget):
         
         self.input_monto = QDoubleSpinBox()
         self.input_monto.setPrefix("$ ")
-        self.input_monto.setRange(-9999999.99, 9999999.99)
+        self.input_monto.setRange(0, 9999999.99)
         self.input_monto.setDecimals(2)
-        self.input_monto.setStyleSheet("padding: 5px; font-size: 12px; border-radius: 3px;")
+        self.input_monto.setStyleSheet("color: #FFFFE0; padding: 5px; font-size: 12px; border-radius: 3px;")
         
         # Botones
-        self.btn_registrar = QPushButton("REGISTRAR")
+        self.btn_registrar = QPushButton("INGRESO")
         self.btn_registrar.setStyleSheet(ESTILO_BOTON)
         self.btn_registrar.clicked.connect(self.gestionar_click_registrar)
+        
+        self.btn_egreso = QPushButton("EGRESO")
+        self.btn_egreso.setStyleSheet(ESTILO_BOTON_EGRESO)
+        self.btn_egreso.clicked.connect(self.gestionar_click_registrar)
 
         self.btn_editar = QPushButton("✎ EDITAR")
         self.btn_editar.setStyleSheet(ESTILO_BOTON_EDITAR)
@@ -115,7 +137,7 @@ class FinanzasApp(QWidget):
         self.btn_editar.clicked.connect(self.cargar_datos_en_inputs)
 
         self.btn_limpiar = QPushButton("LIMPIAR")
-        self.btn_limpiar.setStyleSheet("QPushButton { background-color: #606060; color: white; border-radius: 5px; padding: 8px; }")
+        self.btn_limpiar.setStyleSheet("QPushButton { background-color: #606060; color: white; border-radius: 5px; padding: 8px; font-weight: bold; }")
         self.btn_limpiar.clicked.connect(self.gestionar_click_limpiar)
 
         # Layout Superior
@@ -125,6 +147,7 @@ class FinanzasApp(QWidget):
         top_layout.addWidget(self.lbl_monto)
         top_layout.addWidget(self.input_monto, stretch=1)
         top_layout.addWidget(self.btn_registrar)
+        top_layout.addWidget(self.btn_egreso)
         top_layout.addWidget(self.btn_editar)
         top_layout.addWidget(self.btn_limpiar)
 
@@ -178,6 +201,9 @@ class FinanzasApp(QWidget):
             self.actualizar_registro()
         else:
             self.agregar_nuevo_registro()
+        
+    def gestionar_click_egreso(self):
+        if self.fila_seleccionada 
 
     def gestionar_click_limpiar(self):
         if self.fila_seleccionada >= 0 and not self.es_fila_total(self.fila_seleccionada):
