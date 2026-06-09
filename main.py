@@ -168,7 +168,7 @@ class FinanzasApp(QWidget):
         
         self.input_monto = QDoubleSpinBox()
         self.input_monto.setPrefix("$ ")
-        self.input_monto.setRange(0.01, 9999999.99)
+        self.input_monto.setRange(0.00, 9999999.99)
         self.input_monto.setDecimals(2)
         self.input_monto.setStyleSheet(ESTILO_SPINBOX)
         
@@ -315,7 +315,7 @@ class FinanzasApp(QWidget):
                 return
         
         fecha_hoy = date.today().strftime("%Y-%m-%d")
-        nuevo_reg = RegistroFinanza(fecha_hoy, desc, monto)
+        nuevo_reg = RegistroFinanza(fecha_hoy, desc, monto_final)
         self.lista_registros.append(nuevo_reg)
 
         # Insertar al final, antes del Total si existe
@@ -326,7 +326,7 @@ class FinanzasApp(QWidget):
         self.tabla.insertRow(fila_index)
         self.set_celda(fila_index, 0, fecha_hoy)
         self.set_celda(fila_index, 1, desc)
-        self.set_celda(fila_index, 2, f"{monto:.2f}")
+        self.set_celda(fila_index, 2, f"{monto_final:.2f}")
 
         # Establecer altura de fila para evitar espacios en blanco
         self.tabla.setRowHeight(fila_index, 30)
